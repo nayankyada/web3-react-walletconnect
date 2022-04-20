@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import "./style/index.css";
 import { useWeb3React } from "@web3-react/core";
 import { injected, walletconnect } from "./Connectore";
@@ -15,6 +15,7 @@ function App() {
     error,
     library: web3,
   } = useWeb3React();
+  const [balance, setBalance] = useState("");
   const login = useCallback(
     async (connector) => {
       if (connector) {
@@ -38,41 +39,62 @@ function App() {
       // window.location.reload();
     }
   };
+
   useEffect(() => {
-    web3?.eth.getBalance(account).then((p) => {
-      console.log(web3?.utils.fromWei(p, "ether"));
-    });
+    web3?.eth
+      .getBalance(account)
+      .then((p) => setBalance(web3?.utils.fromWei(p, "ether")))
+      .catch((e) => console.log(e));
   }, [account]);
+
   return (
-    <div className="p-2">
-      <button
-        onClick={() => {
-          login(injected);
-        }}
-        type="button"
-        className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-      >
-        Connect to Metamask
-      </button>
-      <button
-        onClick={() => {
-          login(walletconnect);
-        }}
-        type="button"
-        className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-      >
-        Connect to other wallet
-      </button>
-      <button
-        onClick={() => {
-          logout();
-        }}
-        type="button"
-        className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-      >
-        Logout
-      </button>
-      <p>{account}</p>
+    <div className="p-2 ">
+      <div className="flex space-x-2">
+        <button
+          onClick={() => {
+            login(injected);
+          }}
+          type="button"
+          className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Connect to Metamask
+        </button>
+        <button
+          onClick={() => {
+            login(walletconnect);
+          }}
+          type="button"
+          className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Connect to other wallet
+        </button>
+        <button
+          onClick={() => {
+            logout();
+          }}
+          type="button"
+          className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Logout
+        </button>
+        {/* <button
+          onClick={() => {
+            getAccountBalance();
+          }}
+          type="button"
+          className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Get account Balance
+        </button> */}
+      </div>
+
+      {active && (
+        <>
+          <p>Address : {account}</p>
+          <p>Balance : {balance}</p>
+          <p>ChainId : {chainId}</p>
+        </>
+      )}
     </div>
   );
 }
